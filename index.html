@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteWebMarket - Premium Source Codes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f8fafc; color: #1e293b; }
+        header { background: #0f172a; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 24px; color: #38bdf8; }
+        .hero { text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; padding: 20px; }
+        .price { font-size: 24px; font-weight: 600; color: #10b981; margin: 10px 0; }
+        .btn-buy { background: #10b981; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: 600; margin-top: 10px; }
+
+        /* New Order & Chat Modal CSS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: white; width: 90%; max-width: 450px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+        .modal-header { background: #0f172a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .modal-header span { cursor: pointer; font-size: 20px; color: #ef4444; }
+        .chat-area { padding: 15px; height: 350px; overflow-y: auto; background: #f1f5f9; display: flex; flex-direction: column; gap: 10px; }
+        .sys-msg { background: #e0f2fe; color: #0369a1; padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; border: 1px dashed #38bdf8; }
+        .user-msg { background: #38bdf8; color: white; padding: 10px 15px; border-radius: 8px 8px 0 8px; align-self: flex-end; font-size: 14px; max-width: 80%; }
+        .admin-msg { background: #10b981; color: white; padding: 10px 15px; border-radius: 8px 8px 8px 0; align-self: flex-start; font-size: 14px; max-width: 80%; }
+        .input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #e2e8f0; }
+        .input-area input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit; }
+        .input-area button { background: #38bdf8; color: white; border: none; padding: 10px 20px; margin-left: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+        @media (max-width: 768px) { header { flex-direction: column; } .modal-box { width: 95%; height: 90vh; } .chat-area { height: 100%; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>EliteWebMarket</h1>
+    </header>
+
+    <div class="hero">
+        <h2>Premium Websites & Source Codes</h2>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">E-Commerce</span>
+            <h3>Multi-vendor Store UI</h3>
+            <p style="color: #64748b; font-size: 14px;">Complete solution with admin panel and cart.</p>
+            <div class="price">₹5,999</div>
+            <button class="btn-buy" onclick="openOrderModal('Multi-vendor Store UI', '5999')">Buy & Customize Now</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span style="color:white; font-size:16px;" id="modalProductName">Live Order Chat</span>
+                <span onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="chat-area" id="chatArea">
+                <div class="sys-msg">
+                    <strong>Payment Details:</strong><br>
+                    UPI ID: 8305462936@ibl<br>
+                    Amount: <strong id="modalPrice"></strong><br><br>
+                    <em>Please pay and type your UTR number along with what kind of customization or code you need.</em>
+                </div>
+                </div>
+            <div class="input-area">
+                <input type="text" id="userReqInput" placeholder="Apni requirement aur UTR likhein...">
+                <button onclick="sendRequirement()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openOrderModal(productName, price) {
+            document.getElementById('modalProductName').innerText = "Order: " + productName;
+            document.getElementById('modalPrice').innerText = "₹" + price;
+            document.getElementById('orderModal').style.display = 'flex';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+        }
+
+        function sendRequirement() {
+            let input = document.getElementById('userReqInput');
+            let text = input.value.trim();
+            if(text !== "") {
+                let chatArea = document.getElementById('chatArea');
+                
+                // Show User's Message
+                chatArea.innerHTML += `<div class="user-msg">${text}</div>`;
+                
+                // Auto-reply simulation (Demo purpose only - Realtime needs Firebase)
+                setTimeout(() => {
+                    chatArea.innerHTML += `<div class="admin-msg">Admin: Order received! I am verifying your payment. I will send the code link here shortly.</div>`;
+                    chatArea.scrollTop = chatArea.scrollHeight;
+                }, 1500);
+
+                input.value = "";
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
+
