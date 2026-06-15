@@ -13,7 +13,9 @@
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; padding: 20px; }
         .price { font-size: 24px; font-weight: 600; color: #10b981; margin: 10px 0; }
-        .btn-buy { background: #10b981; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: 600; margin-top: 10px; }
+        .actions { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-demo { background: #f1f5f9; color: #334155; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; flex: 1; text-align: center; border: 1px solid #cbd5e1; }
+        .btn-buy { background: #10b981; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; flex: 1; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
         .modal-box { background: white; width: 90%; max-width: 450px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
@@ -24,9 +26,9 @@
         .user-msg { background: #38bdf8; color: white; padding: 10px 15px; border-radius: 8px 8px 0 8px; align-self: flex-end; font-size: 14px; max-width: 80%; }
         .admin-msg { background: #10b981; color: white; padding: 10px 15px; border-radius: 8px 8px 8px 0; align-self: flex-start; font-size: 14px; max-width: 80%; }
         .input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #e2e8f0; }
-        .input-area input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-family: inherit; }
+        .input-area input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
         .input-area button { background: #38bdf8; color: white; border: none; padding: 10px 20px; margin-left: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        @media (max-width: 768px) { header { flex-direction: column; } .modal-box { width: 95%; height: 90vh; } .chat-area { height: 100%; } }
+        @media (max-width: 768px) { header { flex-direction: column; } .modal-box { width: 95%; height: 90vh; } }
     </style>
 </head>
 <body>
@@ -39,19 +41,23 @@
             <h3>Multi-vendor Store UI</h3>
             <p style="color: #64748b; font-size: 14px;">Complete solution with admin panel and cart.</p>
             <div class="price">₹5,999</div>
-            <button class="btn-buy" onclick="openOrderModal('Multi-vendor Store UI', '5999')">Buy & Chat with Admin</button>
+            <div class="actions">
+                <a href="https://google.com" target="_blank" class="btn-demo">Live Demo</a>
+                <button class="btn-buy" onclick="openOrderModal('Multi-vendor Store UI', '5999')">Buy & Chat</button>
+            </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="orderModal">
         <div class="modal-box">
             <div class="modal-header">
-                <span style="color:white; font-size:16px;" id="modalProductName">Live Support & Delivery</span>
+                <span style="color:white; font-size:16px;" id="modalProductName">Live Support</span>
                 <span onclick="closeOrderModal()">&times;</span>
             </div>
             <div class="chat-area" id="chatArea">
                 <div class="sys-msg">
-                    <strong>Payment Details:</strong><br>UPI ID: 8305462936@ibl<br>
+                    <strong>UPI ID: 8305462936@ibl</strong><br>
+                    <span id="userIdDisplay" style="font-size:11px; color:#64748b;"></span><br>
                     <em>Pay and send your UTR number here. Admin will reply live.</em>
                 </div>
             </div>
@@ -66,7 +72,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <script>
-        // AAPKA FIREBASE CONFIG CODE CONNECTED 100%
         const firebaseConfig = {
             apiKey: "AIzaSyA1NVyjNnuVfc1_mOq0kH0zlo7MMgWvBRE",
             authDomain: "elitewebmarket.firebaseapp.com",
@@ -77,19 +82,36 @@
             appId: "1:692589185129:web:9decb80e2a2e4cf67b7af8"
         };
 
-        // Initialize Firebase
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
 
-        function openOrderModal(productName, price) { document.getElementById('orderModal').style.display = 'flex'; }
+        // Har customer ke browser ke liye ek unique Temporary ID setup karna
+        let myClientId = localStorage.getItem('chat_client_id');
+        if(!myClientId) {
+            myClientId = 'User_' + Date.now();
+            localStorage.setItem('chat_client_id', myClientId);
+        }
+
+        function openOrderModal(productName, price) { 
+            document.getElementById('orderModal').style.display = 'flex'; 
+            document.getElementById('userIdDisplay').innerText = "Your ID: " + myClientId;
+            listenToMyChat();
+        }
         function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
 
-        // Send Message
         function sendMessage() {
             let input = document.getElementById('userReqInput');
             let text = input.value.trim();
             if(text !== "") {
-                db.ref('liveChats').push({
+                // Customer details list database me update karna taaki admin ko dikhe
+                db.ref('activeUsers/' + myClientId).set({
+                    id: myClientId,
+                    lastMessage: text,
+                    timestamp: Date.now()
+                });
+
+                // Chat message bhejna specific user path me
+                db.ref('userChats/' + myClientId).push({
                     sender: "Customer",
                     message: text,
                     timestamp: Date.now()
@@ -98,19 +120,28 @@
             }
         }
 
-        // Receive Messages Live
-        db.ref('liveChats').on('child_added', function(snapshot) {
-            let data = snapshot.val();
-            let chatArea = document.getElementById('chatArea');
-            let formattedMsg = data.message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
+        function listenToMyChat() {
+            db.ref('userChats/' + myClientId).off();
+            document.getElementById('chatArea').innerHTML = `
+                <div class="sys-msg">
+                    <strong>UPI ID: 8305462936@ibl</strong><br>
+                    ID: ${myClientId}<br><br>
+                    <em>Pay and send your UTR number here. Admin will reply live.</em>
+                </div>`;
+                
+            db.ref('userChats/' + myClientId).on('child_added', function(snapshot) {
+                let data = snapshot.val();
+                let chatArea = document.getElementById('chatArea');
+                let formattedMsg = data.message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
 
-            if(data.sender === "Customer") {
-                chatArea.innerHTML += `<div class="user-msg">${formattedMsg}</div>`;
-            } else {
-                chatArea.innerHTML += `<div class="admin-msg">Admin: ${formattedMsg}</div>`;
-            }
-            chatArea.scrollTop = chatArea.scrollHeight; 
-        });
+                if(data.sender === "Customer") {
+                    chatArea.innerHTML += `<div class="user-msg">${formattedMsg}</div>`;
+                } else {
+                    chatArea.innerHTML += `<div class="admin-msg"><b>Admin:</b> ${formattedMsg}</div>`;
+                }
+                chatArea.scrollTop = chatArea.scrollHeight; 
+            });
+        }
     </script>
 </body>
 </html>
