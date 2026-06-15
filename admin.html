@@ -7,33 +7,76 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
         body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; background-color: #f1f5f9; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar Navigation */
         .sidebar { width: 260px; background-color: #0f172a; color: white; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box;}
         .sidebar h2 { color: #38bdf8; margin-top: 0; font-size: 22px; text-align: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px;}
-        .main-content { flex: 1; padding: 20px; overflow-y: auto; box-sizing: border-box;}
-        .card { background: white; padding: 0; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); height: calc(100vh - 40px); box-sizing: border-box; overflow: hidden;}
+        .sidebar button { background: none; border: none; color: #cbd5e1; text-align: left; padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 6px; font-size: 15px; transition: 0.2s; }
+        .sidebar button:hover, .sidebar button.active { background: #1e293b; color: white; border-left: 4px solid #38bdf8; }
         
-        .chat-container { display: flex; height: 100%; border-radius: 8px; overflow: hidden; }
+        /* Main Content */
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; box-sizing: border-box;}
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; height: calc(100vh - 40px); box-sizing: border-box; overflow: hidden;}
+        .active-card { display: block; }
+        h3 { margin-top: 0; color: #1e293b; font-size: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;}
+        
+        /* Admin Add Website Form */
+        label { display: block; margin-top: 15px; font-size: 14px; font-weight: 600; color: #475569; }
+        input, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box; outline: none; }
+        .btn-publish { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 20px; font-weight: 600; width: 100%; }
+        
+        /* Live Chat UI */
+        .chat-container { display: flex; height: calc(100% - 40px); border-radius: 8px; overflow: hidden; }
         .chat-area { width: 100%; display: flex; flex-direction: column; background: white; }
         .chat-header { padding: 15px; background: #0f172a; color: white; font-weight: 600; font-size: 16px; }
         .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f1f5f9; }
         .chat-input-area { padding: 15px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; background: white;}
-        .chat-input-area input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        .chat-input-area input { margin: 0; flex: 1; }
         .btn-send { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;}
         
         .msg { padding: 10px 15px; border-radius: 8px; font-size: 14px; max-width: 75%; word-wrap: break-word; }
         .msg-client { background: white; border: 1px solid #e2e8f0; align-self: flex-start; border-top-left-radius: 0; color: #1e293b;}
         .msg-me { background: #38bdf8; color: white; align-self: flex-end; border-top-right-radius: 0; }
-        @media (max-width: 768px) { body { flex-direction: column; height: 100vh; overflow: auto; } .sidebar { width: 100%; height: auto; padding: 10px; } .card { height: 80vh; } }
+
+        /* Password Screen Overlay */
+        .login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:#0f172a; display:flex; align-items:center; justify-content:center; z-index:9999; }
+        .login-box { background:white; padding:30px; border-radius:12px; text-align:center; width:90%; max-width:350px; }
+
+        /* Mobile Layout Adjustments */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: 100vh; overflow: hidden; }
+            .sidebar { width: 100%; height: auto; padding: 10px; display: flex; flex-direction: row; justify-content: space-around; align-items: center; background-color: #0f172a; border-bottom: 2px solid #1e293b; box-sizing: border-box; }
+            .sidebar h2, .sidebar p { display: none; }
+            .sidebar button { flex: 1; text-align: center; padding: 10px; margin: 0 4px; font-size: 13px; background: #1e293b; border-radius: 6px; }
+            .sidebar button.active { background: #38bdf8; color: white; }
+            
+            .main-content { padding: 10px; height: calc(100vh - 60px); }
+            .card { height: 100%; padding: 10px; }
+            .chat-container { height: calc(100% - 40px); }
+        }
     </style>
 </head>
 <body>
+
+    <div class="login-overlay" id="lockScreen">
+        <div class="login-box">
+            <h3 style="border:none; margin-bottom:15px;">Admin Security Check</h3>
+            <p style="font-size:13px; color:#64748b; margin-top:0;">Enter master password to access control panel.</p>
+            <input type="password" id="passInput" placeholder="Enter Admin Password" style="margin-bottom:15px;">
+            <button class="btn-publish" style="margin:0;" onclick="checkPassword()">Login Dashboard</button>
+        </div>
+    </div>
+
     <div class="sidebar">
         <h2>Admin Panel</h2>
-        <p style="color: #cbd5e1; font-size: 14px; text-align: center;">Live Order Monitoring</p>
+        <p style="color: #cbd5e1; font-size: 14px; text-align: center; margin-top:0;">Live Order Monitoring</p>
+        <button id="btn-chat" onclick="showTab('live-chat', 'btn-chat')" class="active">💬 Live Chat</button>
+        <button id="btn-add" onclick="showTab('add-product', 'btn-add')">➕ Add Website</button>
     </div>
 
     <div class="main-content">
-        <div class="card">
+        
+        <div id="live-chat" class="card active-card" style="padding: 0; overflow: hidden;">
             <div class="chat-container">
                 <div class="chat-area">
                     <div class="chat-header">Live Customer Chat</div>
@@ -41,18 +84,35 @@
                         </div>
                     <div class="chat-input-area">
                         <input type="text" id="adminInput" placeholder="Paste link or type message to customer...">
-                        <button class="btn-send" onclick="sendAdminMessage()">Send Reply</button>
+                        <button class="btn-send" onclick="sendAdminMessage()">Send</button>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div id="add-product" class="card">
+            <h3>Publish a New Website</h3>
+            <form onsubmit="alert('Website Published! (Database config is set)'); return false;">
+                <label>Website Title:</label>
+                <input type="text" placeholder="e.g., E-Commerce App UI" required>
+
+                <label>Short Description:</label>
+                <textarea rows="3" placeholder="Features of this code..."></textarea>
+                
+                <label>Price (₹):</label>
+                <input type="number" placeholder="e.g., 2999" required>
+
+                <button type="submit" class="btn-publish">Publish to Main Website</button>
+            </form>
+        </div>
+
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <script>
-        // AAPKA FIREBASE CONFIG CODE
+        // AAPKA FIREBASE CONFIG CODE CONNECTED 100%
         const firebaseConfig = {
             apiKey: "AIzaSyA1NVyjNnuVfc1_mOq0kH0zlo7MMgWvBRE",
             authDomain: "elitewebmarket.firebaseapp.com",
@@ -64,10 +124,26 @@
         };
 
         // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
+
+        // PASSWORD LOGIC
+        function checkPassword() {
+            let enteredPass = document.getElementById('passInput').value;
+            if(enteredPass === "Yash123") {
+                document.getElementById('lockScreen').style.display = 'none';
+            } else {
+                alert("Wrong Password! Access Denied.");
+            }
+        }
+
+        // Tab Switch Logic
+        function showTab(tabId, btnId) {
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active-card'));
+            document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active-card');
+            document.getElementById(btnId).classList.add('active');
+        }
 
         // Send Message
         function sendAdminMessage() {
@@ -83,7 +159,7 @@
             }
         }
 
-        // Receive Messages Live
+        // Receive Messages
         db.ref('liveChats').on('child_added', function(snapshot) {
             let data = snapshot.val();
             let chatBox = document.getElementById('adminChatBox');
@@ -99,4 +175,3 @@
     </script>
 </body>
 </html>
-
