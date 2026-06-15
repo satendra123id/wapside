@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control - WebStore</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; background-color: #f1f5f9; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: #0f172a; color: white; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box;}
+        .sidebar h2 { color: #38bdf8; margin-top: 0; font-size: 22px; text-align: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px;}
+        .sidebar button { background: none; border: none; color: #cbd5e1; text-align: left; padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 6px; font-size: 15px; transition: 0.2s; }
+        .sidebar button:hover, .sidebar button.active { background: #1e293b; color: white; border-left: 4px solid #38bdf8; }
+        
+        /* Main Content */
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; box-sizing: border-box;}
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; height: calc(100vh - 40px); box-sizing: border-box; }
+        .active-card { display: block; }
+        h3 { margin-top: 0; color: #1e293b; font-size: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;}
+        
+        /* Admin Add Website Form */
+        label { display: block; margin-top: 15px; font-size: 14px; font-weight: 600; color: #475569; }
+        input, textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box; outline: none; }
+        input:focus, textarea:focus { border-color: #38bdf8; }
+        .btn-publish { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 20px; font-weight: 600; width: 100%; }
+        
+        /* Live Order & Chat UI */
+        .chat-container { display: flex; height: calc(100% - 40px); border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        .chat-sidebar { width: 35%; background: #f8fafc; border-right: 1px solid #e2e8f0; overflow-y: auto; }
+        .chat-user { padding: 15px; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .chat-user:hover, .chat-user.active { background: #e0f2fe; }
+        .chat-user h4 { margin: 0 0 5px; font-size: 14px; color: #0f172a;}
+        .chat-user p { margin: 0; font-size: 12px; color: #64748b; }
+        .badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; float: right; }
+        
+        .chat-area { width: 65%; display: flex; flex-direction: column; background: white; }
+        .chat-header { padding: 15px; background: #0f172a; color: white; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between;}
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f1f5f9; }
+        .chat-input-area { padding: 15px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; background: white;}
+        .chat-input-area input { margin: 0; flex: 1; }
+        .btn-send { background: #38bdf8; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;}
+        
+        /* Message Bubbles */
+        .msg { padding: 10px 15px; border-radius: 8px; font-size: 14px; max-width: 75%; word-wrap: break-word; }
+        .msg-client { background: white; border: 1px solid #e2e8f0; align-self: flex-start; border-top-left-radius: 0; color: #1e293b;}
+        .msg-me { background: #10b981; color: white; align-self: flex-end; border-top-right-radius: 0; }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body { flex-direction: column; height: 100vh; overflow: auto; }
+            .sidebar { width: 100%; height: auto; display: flex; flex-wrap: wrap; flex-direction: row; justify-content: space-between; padding: 10px; }
+            .sidebar h2 { width: 100%; margin-bottom: 10px; font-size: 18px; }
+            .sidebar button { flex: 1; text-align: center; padding: 8px; font-size: 12px; margin: 2px; }
+            .card { height: auto; min-height: 80vh; }
+            .chat-container { flex-direction: column; height: 70vh; }
+            .chat-sidebar { width: 100%; height: 30%; border-right: none; border-bottom: 2px solid #cbd5e1; }
+            .chat-area { width: 100%; height: 70%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <button id="btn-add" onclick="showTab('add-product', 'btn-add')">➕ Add Website</button>
+        <button id="btn-chat" onclick="showTab('live-chat', 'btn-chat')" class="active">💬 Live Orders & Chat <span style="color:red;">●</span></button>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="add-product" class="card">
+            <h3>Publish a New Website</h3>
+            <form onsubmit="alert('Website Published! (Will show on main page once DB is linked)'); return false;">
+                <label>Website Title:</label>
+                <input type="text" placeholder="e.g., E-Commerce App UI" required>
+
+                <label>Short Description:</label>
+                <textarea rows="3" placeholder="Features of this code..."></textarea>
+                
+                <label>Price (₹):</label>
+                <input type="number" placeholder="e.g., 2999" required>
+
+                <button type="submit" class="btn-publish">Publish to Main Website</button>
+            </form>
+        </div>
+
+        <div id="live-chat" class="card active-card" style="padding: 0; overflow: hidden;">
+            <div class="chat-container">
+                
+                <div class="chat-sidebar">
+                    <div class="chat-user active">
+                        <span class="badge">New Order</span>
+                        <h4>Customer 1</h4>
+                        <p>Order: Multi-vendor Store UI</p>
+                    </div>
+                </div>
+
+                <div class="chat-area">
+                    <div class="chat-header">
+                        <span>Chatting with Customer 1</span>
+                        <span style="color: #38bdf8;">Amt: ₹5,999</span>
+                    </div>
+                    
+                    <div class="chat-box" id="adminChatBox">
+                        <div class="msg msg-client">
+                            <strong>UTR: 123456789012</strong><br>
+                            Bhai maine payment kar di hai. Mujhe Multi-vendor E-Commerce site chahiye. Code bhej do please.
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <input type="text" id="adminInput" placeholder="Paste ZIP file link or type a message...">
+                        <button class="btn-send" onclick="sendAdminMessage()">Send File</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showTab(tabId, btnId) {
+            // Hide all tabs
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active-card'));
+            document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected
+            document.getElementById(tabId).classList.add('active-card');
+            document.getElementById(btnId).classList.add('active');
+        }
+
+        function sendAdminMessage() {
+            let input = document.getElementById('adminInput');
+            let text = input.value.trim();
+            if(text !== "") {
+                let chatBox = document.getElementById('adminChatBox');
+                // Make links clickable if admin pastes a URL
+                let formattedText = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: white; text-decoration: underline;">$1</a>');
+                
+                chatBox.innerHTML += `<div class="msg msg-me">${formattedText}</div>`;
+                input.value = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
+
