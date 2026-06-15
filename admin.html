@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control - WebStore</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; background-color: #f1f5f9; height: 100vh; overflow: hidden; }
+        .sidebar { width: 260px; background-color: #0f172a; color: white; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box;}
+        .sidebar h2 { color: #38bdf8; margin-top: 0; font-size: 22px; text-align: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px;}
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; box-sizing: border-box;}
+        .card { background: white; padding: 0; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); height: calc(100vh - 40px); box-sizing: border-box; overflow: hidden;}
+        
+        .chat-container { display: flex; height: 100%; border-radius: 8px; overflow: hidden; }
+        .chat-area { width: 100%; display: flex; flex-direction: column; background: white; }
+        .chat-header { padding: 15px; background: #0f172a; color: white; font-weight: 600; font-size: 16px; }
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f1f5f9; }
+        .chat-input-area { padding: 15px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; background: white;}
+        .chat-input-area input { flex: 1; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        .btn-send { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;}
+        
+        .msg { padding: 10px 15px; border-radius: 8px; font-size: 14px; max-width: 75%; word-wrap: break-word; }
+        .msg-client { background: white; border: 1px solid #e2e8f0; align-self: flex-start; border-top-left-radius: 0; color: #1e293b;}
+        .msg-me { background: #38bdf8; color: white; align-self: flex-end; border-top-right-radius: 0; }
+        @media (max-width: 768px) { body { flex-direction: column; height: 100vh; overflow: auto; } .sidebar { width: 100%; height: auto; padding: 10px; } .card { height: 80vh; } }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <p style="color: #cbd5e1; font-size: 14px; text-align: center;">Live Order Monitoring</p>
+    </div>
+
+    <div class="main-content">
+        <div class="card">
+            <div class="chat-container">
+                <div class="chat-area">
+                    <div class="chat-header">Live Customer Chat</div>
+                    <div class="chat-box" id="adminChatBox">
+                        </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="adminInput" placeholder="Paste link or type message to customer...">
+                        <button class="btn-send" onclick="sendAdminMessage()">Send Reply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
+    <script>
+        // AAPKA FIREBASE CONFIG CODE
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1NVyjNnuVfc1_mOq0kH0zlo7MMgWvBRE",
+            authDomain: "elitewebmarket.firebaseapp.com",
+            databaseURL: "https://elitewebmarket-default-rtdb.firebaseio.com", 
+            projectId: "elitewebmarket",
+            storageBucket: "elitewebmarket.firebasestorage.app",
+            messagingSenderId: "692589185129",
+            appId: "1:692589185129:web:9decb80e2a2e4cf67b7af8"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // Send Message
+        function sendAdminMessage() {
+            let input = document.getElementById('adminInput');
+            let text = input.value.trim();
+            if(text !== "") {
+                db.ref('liveChats').push({
+                    sender: "Admin",
+                    message: text,
+                    timestamp: Date.now()
+                });
+                input.value = "";
+            }
+        }
+
+        // Receive Messages Live
+        db.ref('liveChats').on('child_added', function(snapshot) {
+            let data = snapshot.val();
+            let chatBox = document.getElementById('adminChatBox');
+            let formattedMsg = data.message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
+
+            if(data.sender === "Customer") {
+                chatBox.innerHTML += `<div class="msg msg-client"><b>Customer:</b> ${formattedMsg}</div>`;
+            } else {
+                chatBox.innerHTML += `<div class="msg msg-me">${formattedMsg}</div>`;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+</body>
+</html>
+
