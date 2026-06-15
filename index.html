@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteWebMarket - Premium Source Codes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f8fafc; color: #1e293b; }
+        header { background: #0f172a; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 24px; color: #38bdf8; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-weight: 400; }
+        
+        .hero { text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; }
+        .hero h2 { font-size: 36px; margin-bottom: 10px; }
+        .hero p { color: #cbd5e1; }
+        
+        .categories { text-align: center; padding: 20px; }
+        .cat-btn { background: white; border: 1px solid #cbd5e1; padding: 8px 15px; margin: 5px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .cat-btn:hover, .cat-btn.active { background: #38bdf8; color: white; border-color: #38bdf8; }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card-img { background: #e2e8f0; height: 160px; display: flex; align-items: center; justify-content: center; color: #64748b; font-weight: 600; }
+        .card-content { padding: 20px; }
+        .category-tag { background: #e0f2fe; color: #0369a1; font-size: 12px; padding: 4px 8px; border-radius: 4px; font-weight: 600; text-transform: uppercase; }
+        .card h3 { margin: 10px 0 5px; font-size: 20px; }
+        .short-desc { color: #64748b; font-size: 14px; margin-bottom: 15px; }
+        .price { font-size: 24px; font-weight: 600; color: #10b981; }
+        
+        .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .btn-demo { background: #f1f5f9; color: #334155; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; }
+        .btn-buy { background: #10b981; color: white; padding: 8px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
+
+        /* Chat Widget */
+        .chat-widget { position: fixed; bottom: 20px; right: 20px; width: 320px; background: white; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; z-index: 1000; border: 1px solid #e2e8f0; }
+        .chat-header { background: #38bdf8; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .chat-close { cursor: pointer; font-size: 20px; }
+        .chat-body { padding: 15px; height: 250px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px; border-radius: 8px; font-size: 14px; max-width: 80%; }
+        .msg-admin { background: #e2e8f0; align-self: flex-start; color: #0f172a; border-bottom-left-radius: 0; }
+        .msg-user { background: #38bdf8; align-self: flex-end; color: white; border-bottom-right-radius: 0; }
+        .chat-footer { padding: 10px; background: white; display: flex; border-top: 1px solid #e2e8f0; }
+        .chat-input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        .chat-send { background: #38bdf8; color: white; border: none; padding: 10px 15px; margin-left: 5px; border-radius: 6px; cursor: pointer; }
+        
+        .chat-trigger { position: fixed; bottom: 20px; right: 20px; background: #38bdf8; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); cursor: pointer; z-index: 999; }
+
+        /* Mobile Responsive CSS */
+        @media (max-width: 768px) {
+            header { flex-direction: column; padding: 15px; text-align: center; }
+            .nav-links { margin-top: 10px; }
+            .nav-links a { margin: 0 10px; }
+            .chat-widget { width: 90%; right: 5%; bottom: 80px; } 
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>EliteWebMarket</h1>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">Support</a>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h2>Professional Source Codes & Websites</h2>
+        <p>Buy, Deploy, and Grow. Contact admin instantly after purchase.</p>
+    </div>
+
+    <div class="categories">
+        <button class="cat-btn active">All</button>
+        <button class="cat-btn">E-Commerce</button>
+        <button class="cat-btn">Blogs</button>
+        <button class="cat-btn">Portfolio</button>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-img">Preview Image Here</div>
+            <div class="card-content">
+                <span class="category-tag">E-Commerce</span>
+                <h3>Multi-vendor Store</h3>
+                <p class="short-desc">Complete e-commerce solution with admin panel, cart, and payment gateway UI.</p>
+                <div class="price">₹5,999</div>
+                <div class="actions">
+                    <a href="#" class="btn-demo">Live Demo</a>
+                    <button class="btn-buy" onclick="alert('Scan UPI QR code or pay to: 8305462936@ibl')">Buy Now</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-img">Preview Image Here</div>
+            <div class="card-content">
+                <span class="category-tag">Blogs</span>
+                <p class="short-desc">SEO friendly blog template with dark mode and fast loading speed.</p>
+                <div class="price">₹1,999</div>
+                <div class="actions">
+                    <a href="#" class="btn-demo">Live Demo</a>
+                    <button class="btn-buy" onclick="alert('Scan UPI QR code or pay to: 8305462936@ibl')">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-trigger" onclick="toggleChat()">💬</div>
+
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header">
+            <span>Support & Delivery Chat</span>
+            <span class="chat-close" onclick="toggleChat()">&times;</span>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="msg msg-admin">Hello! Agar aapne payment kar di hai toh apna UTR number bhejein. Main file bhej dunga.</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="userInput" class="chat-input" placeholder="Type message...">
+            <button class="chat-send" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            let widget = document.getElementById('chatWidget');
+            widget.style.display = widget.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendMessage() {
+            let input = document.getElementById('userInput');
+            let text = input.value.trim();
+            if(text !== "") {
+                let chatBody = document.getElementById('chatBody');
+                chatBody.innerHTML += `<div class="msg msg-user">${text}</div>`;
+                input.value = "";
+                chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll
+            }
+        }
+    </script>
+</body>
+          </html>
+          
