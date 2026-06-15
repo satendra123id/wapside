@@ -3,112 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Control - WebStore</title>
+    <title>EliteWebMarket - Premium Source Codes</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; background-color: #f1f5f9; height: 100vh; overflow: hidden; }
-        
-        .sidebar { width: 260px; background-color: #0f172a; color: white; padding: 20px; display: flex; flex-direction: column; box-sizing: border-box;}
-        .sidebar h2 { color: #38bdf8; margin-top: 0; font-size: 22px; text-align: center; border-bottom: 1px solid #1e293b; padding-bottom: 15px;}
-        .sidebar button { background: none; border: none; color: #cbd5e1; text-align: left; padding: 12px; margin-bottom: 8px; cursor: pointer; border-radius: 6px; font-size: 15px; transition: 0.2s; }
-        .sidebar button:hover, .sidebar button.active { background: #1e293b; color: white; border-left: 4px solid #38bdf8; }
-        
-        .main-content { flex: 1; padding: 20px; overflow-y: auto; box-sizing: border-box;}
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; height: calc(100vh - 40px); box-sizing: border-box; overflow: hidden;}
-        .active-card { display: block; }
-        h3 { margin-top: 0; color: #1e293b; font-size: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;}
-        
-        label { display: block; margin-top: 10px; font-size: 13px; font-weight: 600; color: #475569; }
-        input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box; outline: none; }
-        .btn-publish { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 15px; font-weight: 600; width: 100%; }
-        
-        .chat-container { display: flex; height: calc(100% - 40px); border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
-        .user-list { width: 35%; background: #f8fafc; border-right: 1px solid #e2e8f0; overflow-y: auto; }
-        .user-item { padding: 12px; border-bottom: 1px solid #e2e8f0; cursor: pointer; transition: 0.2s; font-size: 13px; }
-        .user-item:hover, .user-item.active { background: #e0f2fe; border-left: 4px solid #38bdf8; }
-        .chat-area { width: 65%; display: flex; flex-direction: column; background: white; }
-        .chat-header { padding: 15px; background: #0f172a; color: white; font-weight: 600; font-size: 15px; }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f1f5f9; }
-        .chat-input-area { padding: 15px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; background: white;}
-        .chat-input-area input { margin: 0; flex: 1; }
-        .btn-send { background: #38bdf8; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;}
-        
-        .msg { padding: 10px 15px; border-radius: 8px; font-size: 14px; max-width: 75%; word-wrap: break-word; }
-        .msg-client { background: white; border: 1px solid #e2e8f0; align-self: flex-start; border-top-left-radius: 0; color: #1e293b;}
-        .msg-me { background: #38bdf8; color: white; align-self: flex-end; border-top-right-radius: 0; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background-color: #f8fafc; color: #1e293b; }
+        header { background: #0f172a; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 24px; color: #38bdf8; }
+        .hero { text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+        .price { font-size: 24px; font-weight: 600; color: #10b981; margin: 10px 0; }
+        .actions { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-demo { background: #f1f5f9; color: #334155; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; flex: 1; text-align: center; border: 1px solid #cbd5e1; }
+        .btn-buy { background: #10b981; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; flex: 1; }
 
-        .login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:#0f172a; display:flex; align-items:center; justify-content:center; z-index:9999; }
-        .login-box { background:white; padding:30px; border-radius:12px; text-align:center; width:90%; max-width:350px; }
-
-        @media (max-width: 768px) {
-            body { flex-direction: column; height: 100vh; overflow: hidden; }
-            .sidebar { width: 100%; height: auto; padding: 10px; display: flex; flex-direction: row; justify-content: space-around; background-color: #0f172a; border-bottom: 2px solid #1e293b; box-sizing: border-box; }
-            .sidebar h2, .sidebar p { display: none; }
-            .sidebar button { flex: 1; text-align: center; padding: 10px; margin: 0 4px; font-size: 13px; background: #1e293b; border-radius: 6px; }
-            .sidebar button.active { background: #38bdf8; color: white; }
-            .main-content { padding: 10px; height: calc(100vh - 60px); }
-            .card { height: 100%; padding: 10px; }
-            .chat-container { flex-direction: column; }
-            .user-list { width: 100%; height: 35%; border-right: none; border-bottom: 1px solid #cbd5e1; }
-            .chat-area { width: 100%; height: 65%; }
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-box { background: white; width: 90%; max-width: 450px; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
+        .modal-header { background: #0f172a; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .modal-header span { cursor: pointer; font-size: 20px; color: #ef4444; }
+        .chat-area { padding: 15px; height: 350px; overflow-y: auto; background: #f1f5f9; display: flex; flex-direction: column; gap: 10px; }
+        .sys-msg { background: #e0f2fe; color: #0369a1; padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; border: 1px dashed #38bdf8; }
+        .user-msg { background: #38bdf8; color: white; padding: 10px 15px; border-radius: 8px 8px 0 8px; align-self: flex-end; font-size: 14px; max-width: 80%; }
+        .admin-msg { background: #10b981; color: white; padding: 10px 15px; border-radius: 8px 8px 8px 0; align-self: flex-start; font-size: 14px; max-width: 80%; }
+        .input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #e2e8f0; }
+        .input-area input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        .input-area button { background: #38bdf8; color: white; border: none; padding: 10px 20px; margin-left: 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        @media (max-width: 768px) { header { flex-direction: column; } .modal-box { width: 95%; height: 90vh; } }
     </style>
 </head>
 <body>
-
-    <div class="login-overlay" id="lockScreen">
-        <div class="login-box">
-            <h3 style="border:none; margin-bottom:15px;">Admin Security Check</h3>
-            <input type="password" id="passInput" placeholder="Enter Admin Password" style="margin-bottom:15px;">
-            <button class="btn-publish" style="margin:0;" onclick="checkPassword()">Login Dashboard</button>
-        </div>
+    <header><h1>EliteWebMarket</h1></header>
+    <div class="hero"><h2>Premium Websites & Source Codes</h2></div>
+    
+    <div class="container" id="productsContainer">
+        <div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">Products loading...</div>
     </div>
 
-    <div class="sidebar">
-        <h2>Admin Panel</h2>
-        <button id="btn-chat" onclick="showTab('live-chat', 'btn-chat')" class="active">💬 Customer Chats</button>
-        <button id="btn-add" onclick="showTab('add-product', 'btn-add')">➕ Add Website</button>
-    </div>
-
-    <div class="main-content">
-        
-        <div id="live-chat" class="card active-card" style="padding: 0; overflow: hidden;">
-            <div class="chat-container">
-                <div class="user-list" id="userListContainer">
-                    <div style="padding:15px; text-align:center; color:#64748b; font-size:12px;">No active clients yet</div>
-                </div>
-                <div class="chat-area">
-                    <div class="chat-header" id="currentChatHeader">Select a customer to start chat</div>
-                    <div class="chat-box" id="adminChatBox">
-                        <div style="text-align:center; color:#64748b; margin-top:20px; font-size:14px;">Kisi client par click karein unka message dekhne ke liye.</div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="adminInput" placeholder="Type message or paste zip link...">
-                        <button class="btn-send" onclick="sendAdminMessage()">Send</button>
-                    </div>
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span style="color:white; font-size:16px;" id="modalProductName">Live Support</span>
+                <span onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="chat-area" id="chatArea">
+                <div class="sys-msg">
+                    <strong>UPI ID: 8305462936@ibl</strong><br>
+                    <span id="userIdDisplay" style="font-size:11px; color:#64748b;"></span><br>
+                    <em>Pay and send your UTR number here. Admin will reply live.</em>
                 </div>
             </div>
+            <div class="input-area">
+                <input type="text" id="userReqInput" placeholder="Apni requirement aur UTR likhein...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
         </div>
-
-        <div id="add-product" class="card">
-            <h3>Publish a New Website / Course</h3>
-            <form id="addProductForm" onsubmit="publishProduct(event)">
-                <label>Website / Product Title:</label>
-                <input type="text" id="prodTitle" placeholder="e.g., Corsess wapside" required>
-
-                <label>Short Description:</label>
-                <textarea rows="2" id="prodDesc" placeholder="e.g., Corsess wapside buy sell tools and all digital product" required></textarea>
-                
-                <label>Price (₹):</label>
-                <input type="number" id="prodPrice" placeholder="e.g., 249" required>
-
-                <label>Live Demo Website Link (URL):</label>
-                <input type="url" id="prodDemo" placeholder="https://thenewtips.eu.cc" required>
-
-                <button type="submit" class="btn-publish">Publish to Main Website</button>
-            </form>
-        </div>
-
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -128,108 +76,89 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
 
-        let selectedClientId = null;
-
-        function checkPassword() {
-            let enteredPass = document.getElementById('passInput').value;
-            if(enteredPass === "Yash123") { document.getElementById('lockScreen').style.display = 'none'; } 
-            else { alert("Wrong Password! Access Denied."); }
+        let myClientId = localStorage.getItem('chat_client_id');
+        if(!myClientId) {
+            myClientId = 'User_' + Date.now();
+            localStorage.setItem('chat_client_id', myClientId);
         }
 
-        function showTab(tabId, btnId) {
-            document.querySelectorAll('.card').forEach(card => card.classList.remove('active-card'));
-            document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active-card');
-            document.getElementById(btnId).classList.add('active');
-        }
-
-        // 🔥 REAL LIVE PRODUCT PUBLISH LOGIC (FIXED)
-        function publishProduct(e) {
-            e.preventDefault();
-            
-            let title = document.getElementById('prodTitle').value;
-            let desc = document.getElementById('prodDesc').value;
-            let price = document.getElementById('prodPrice').value;
-            let demoLink = document.getElementById('prodDemo').value;
-
-            // Push directly to Firebase
-            db.ref('products').push({
-                title: title,
-                desc: desc,
-                price: price,
-                demoLink: demoLink,
-                timestamp: Date.now()
-            }, function(error) {
-                if (error) {
-                    alert("Error: Data save nahi ho paya!");
-                } else {
-                    alert("🎉 Success! Product live ho gaya hai website par.");
-                    document.getElementById('addProductForm').reset();
-                    showTab('live-chat', 'btn-chat'); // Auto redirect to chat tab
-                }
-            });
-        }
-
-        // Realtime active users load logic
-        db.ref('activeUsers').on('value', function(snapshot) {
-            let container = document.getElementById('userListContainer');
+        // Live Realtime Data Fetch for Added Products
+        db.ref('products').on('value', function(snapshot) {
+            let container = document.getElementById('productsContainer');
             container.innerHTML = "";
-            let users = snapshot.val();
-            if(users) {
-                Object.keys(users).forEach(key => {
-                    let user = users[key];
-                    let activeClass = selectedClientId === user.id ? 'active' : '';
+            let products = snapshot.val();
+            
+            if(products) {
+                Object.keys(products).forEach(key => {
+                    let item = products[key];
                     container.innerHTML += `
-                        <div class="user-item ${activeClass}" onclick="openClientChat('${user.id}')">
-                            <strong>${user.id}</strong>
-                            <p style="margin:4px 0 0; color:#64748b; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${user.lastMessage}</p>
+                        <div class="card">
+                            <div>
+                                <span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase;">Digital Product</span>
+                                <h3 style="margin: 10px 0 5px 0;">${item.title}</h3>
+                                <p style="color: #64748b; font-size: 14px; margin: 0 0 10px 0;">${item.desc}</p>
+                            </div>
+                            <div>
+                                <div class="price">₹${item.price}</div>
+                                <div class="actions">
+                                    <a href="${item.demoLink}" target="_blank" class="btn-demo">Live Demo</a>
+                                    <button class="btn-buy" onclick="openOrderModal('${item.title}', '${item.price}')">Buy & Chat</button>
+                                </div>
+                            </div>
                         </div>`;
                 });
             } else {
-                container.innerHTML = '<div style="padding:15px; text-align:center; color:#64748b; font-size:12px;">No active clients yet</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">No products added yet. Check admin panel!</div>';
             }
         });
 
-        function openClientChat(clientId) {
-            selectedClientId = clientId;
-            document.getElementById('currentChatHeader').innerText = "Chatting with: " + clientId;
-            document.querySelectorAll('.user-item').forEach(item => item.classList.remove('active'));
-            
-            db.ref('userChats/' + clientId).on('value', function(snapshot) {
-                let chatBox = document.getElementById('adminChatBox');
-                chatBox.innerHTML = "";
-                let messages = snapshot.val();
-                if(messages) {
-                    Object.keys(messages).forEach(mKey => {
-                        let msgData = messages[mKey];
-                        let formattedMsg = msgData.message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
-                        
-                        if(msgData.sender === "Customer") {
-                            chatBox.innerHTML += `<div class="msg msg-client">${formattedMsg}</div>`;
-                        } else {
-                            chatBox.innerHTML += `<div class="msg msg-me">${formattedMsg}</div>`;
-                        }
-                    });
-                }
-                chatBox.scrollTop = chatBox.scrollHeight;
-            });
+        function openOrderModal(productName, price) { 
+            document.getElementById('orderModal').style.display = 'flex'; 
+            document.getElementById('userIdDisplay').innerText = "Your ID: " + myClientId;
+            listenToMyChat();
         }
+        function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
 
-        function sendAdminMessage() {
-            let input = document.getElementById('adminInput');
+        function sendMessage() {
+            let input = document.getElementById('userReqInput');
             let text = input.value.trim();
-            if(text !== "" && selectedClientId) {
-                db.ref('userChats/' + selectedClientId).push({
-                    sender: "Admin",
+            if(text !== "") {
+                db.ref('activeUsers/' + myClientId).set({
+                    id: myClientId,
+                    lastMessage: text,
+                    timestamp: Date.now()
+                });
+                db.ref('userChats/' + myClientId).push({
+                    sender: "Customer",
                     message: text,
                     timestamp: Date.now()
                 });
                 input.value = "";
-            } else if(!selectedClientId) {
-                alert("Pehle kisi client ko select karein!");
             }
+        }
+
+        function listenToMyChat() {
+            db.ref('userChats/' + myClientId).off();
+            document.getElementById('chatArea').innerHTML = `
+                <div class="sys-msg">
+                    <strong>UPI ID: 8305462936@ibl</strong><br>
+                    ID: ${myClientId}<br><br>
+                    <em>Pay and send your UTR number here. Admin will reply live.</em>
+                </div>`;
+                
+            db.ref('userChats/' + myClientId).on('child_added', function(snapshot) {
+                let data = snapshot.val();
+                let chatArea = document.getElementById('chatArea');
+                let formattedMsg = data.message.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" style="color: inherit; text-decoration: underline;">$1</a>');
+
+                if(data.sender === "Customer") {
+                    chatArea.innerHTML += `<div class="user-msg">${formattedMsg}</div>`;
+                } else {
+                    chatArea.innerHTML += `<div class="admin-msg"><b>Admin:</b> ${formattedMsg}</div>`;
+                }
+                chatArea.scrollTop = chatArea.scrollHeight; 
+            });
         }
     </script>
 </body>
 </html>
-
