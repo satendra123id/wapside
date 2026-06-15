@@ -11,7 +11,7 @@
         header h1 { margin: 0; font-size: 24px; color: #38bdf8; }
         .hero { text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #0f172a, #1e293b); color: white; }
         .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; padding: 20px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
         .price { font-size: 24px; font-weight: 600; color: #10b981; margin: 10px 0; }
         .actions { display: flex; gap: 10px; margin-top: 15px; }
         .btn-demo { background: #f1f5f9; color: #334155; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; flex: 1; text-align: center; border: 1px solid #cbd5e1; }
@@ -35,17 +35,8 @@
     <header><h1>EliteWebMarket</h1></header>
     <div class="hero"><h2>Premium Websites & Source Codes</h2></div>
     
-    <div class="container">
-        <div class="card">
-            <span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">E-Commerce</span>
-            <h3>Multi-vendor Store UI</h3>
-            <p style="color: #64748b; font-size: 14px;">Complete solution with admin panel and cart.</p>
-            <div class="price">₹5,999</div>
-            <div class="actions">
-                <a href="https://google.com" target="_blank" class="btn-demo">Live Demo</a>
-                <button class="btn-buy" onclick="openOrderModal('Multi-vendor Store UI', '5999')">Buy & Chat</button>
-            </div>
-        </div>
+    <div class="container" id="productsContainer">
+        <div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">Products loading...</div>
     </div>
 
     <div class="modal-overlay" id="orderModal">
@@ -85,12 +76,41 @@
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.database();
 
-        // Har customer ke browser ke liye ek unique Temporary ID setup karna
         let myClientId = localStorage.getItem('chat_client_id');
         if(!myClientId) {
             myClientId = 'User_' + Date.now();
             localStorage.setItem('chat_client_id', myClientId);
         }
+
+        // Live Realtime Data Fetch for Added Products
+        db.ref('products').on('value', function(snapshot) {
+            let container = document.getElementById('productsContainer');
+            container.innerHTML = "";
+            let products = snapshot.val();
+            
+            if(products) {
+                Object.keys(products).forEach(key => {
+                    let item = products[key];
+                    container.innerHTML += `
+                        <div class="card">
+                            <div>
+                                <span style="background: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase;">Digital Product</span>
+                                <h3 style="margin: 10px 0 5px 0;">${item.title}</h3>
+                                <p style="color: #64748b; font-size: 14px; margin: 0 0 10px 0;">${item.desc}</p>
+                            </div>
+                            <div>
+                                <div class="price">₹${item.price}</div>
+                                <div class="actions">
+                                    <a href="${item.demoLink}" target="_blank" class="btn-demo">Live Demo</a>
+                                    <button class="btn-buy" onclick="openOrderModal('${item.title}', '${item.price}')">Buy & Chat</button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">No products added yet. Check admin panel!</div>';
+            }
+        });
 
         function openOrderModal(productName, price) { 
             document.getElementById('orderModal').style.display = 'flex'; 
@@ -103,14 +123,11 @@
             let input = document.getElementById('userReqInput');
             let text = input.value.trim();
             if(text !== "") {
-                // Customer details list database me update karna taaki admin ko dikhe
                 db.ref('activeUsers/' + myClientId).set({
                     id: myClientId,
                     lastMessage: text,
                     timestamp: Date.now()
                 });
-
-                // Chat message bhejna specific user path me
                 db.ref('userChats/' + myClientId).push({
                     sender: "Customer",
                     message: text,
