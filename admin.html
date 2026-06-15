@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body { font-family: 'Poppins', sans-serif; margin: 0; display: flex; background-color: #f1f5f9; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: #0f172a; color: white; padding: 20px; display: flex; flex-direction: column; }
+        .sidebar h2 { color: #38bdf8; margin-top: 0; font-size: 22px; }
+        .sidebar button { background: none; border: none; color: #cbd5e1; text-align: left; padding: 12px; margin-bottom: 5px; cursor: pointer; border-radius: 6px; font-size: 15px; transition: 0.2s; }
+        .sidebar button:hover, .sidebar button.active { background: #1e293b; color: white; border-left: 4px solid #38bdf8; }
+        
+        /* Main Content */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
+        .active-card { display: block; }
+        
+        h3 { margin-top: 0; color: #1e293b; }
+        
+        /* Admin Add Website Form Elements */
+        label { display: block; margin-top: 15px; font-size: 14px; font-weight: 600; color: #475569; }
+        input[type="text"], input[type="number"], input[type="url"], textarea { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; box-sizing: border-box; }
+        .btn-publish { background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 20px; font-weight: 600; }
+        
+        /* Chat UI in Admin */
+        .chat-container { display: flex; height: 75vh; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+        .chat-sidebar { width: 30%; background: #f8fafc; border-right: 1px solid #e2e8f0; overflow-y: auto; }
+        .chat-user { padding: 15px; border-bottom: 1px solid #e2e8f0; cursor: pointer; }
+        .chat-user:hover { background: #e2e8f0; }
+        .chat-user h4 { margin: 0 0 5px; font-size: 14px; }
+        .chat-user p { margin: 0; font-size: 12px; color: #64748b; }
+        .badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; float: right; }
+        
+        .chat-area { width: 70%; display: flex; flex-direction: column; background: white; }
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f1f5f9; }
+        .chat-input-area { padding: 15px; border-top: 1px solid #e2e8f0; display: flex; gap: 10px; }
+        .chat-input-area input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
+        .btn-send { background: #38bdf8; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        
+        .msg { padding: 10px 15px; border-radius: 8px; font-size: 14px; max-width: 70%; }
+        .msg-client { background: white; border: 1px solid #e2e8f0; align-self: flex-start; }
+        .msg-me { background: #38bdf8; color: white; align-self: flex-end; }
+
+        /* Mobile Responsive CSS for Admin */
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow-y: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; display: flex; flex-wrap: wrap; justify-content: space-between; padding: 10px; box-sizing: border-box;}
+            .sidebar h2 { width: 100%; text-align: center; margin-bottom: 10px; }
+            .sidebar button { width: auto; flex: 1; text-align: center; padding: 8px; font-size: 12px; }
+            
+            .chat-container { flex-direction: column; height: auto; }
+            .chat-sidebar { width: 100%; height: 150px; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .chat-area { width: 100%; height: 400px; }
+            .main-content { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <button onclick="showTab('dashboard')" class="active">📊 Dashboard</button>
+        <button onclick="showTab('add-product')">➕ Add Website</button>
+        <button onclick="showTab('live-chat')">💬 Live Chat <span style="color:red;">●</span></button>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="dashboard" class="card active-card">
+            <h3>Welcome to Admin Dashboard</h3>
+            <p>Select an option from the menu to manage your store.</p>
+        </div>
+
+        <div id="add-product" class="card">
+            <h3>Publish a New Website</h3>
+            <form onsubmit="alert('Website Published! (Database setup required for live sync)'); return false;">
+                <label>Website Title:</label>
+                <input type="text" placeholder="e.g., Portfolio Website" required>
+                
+                <label>Category:</label>
+                <input type="text" placeholder="e.g., Blogs, E-Commerce, Portfolio" required>
+
+                <label>Short Description:</label>
+                <textarea rows="3" placeholder="Describe the features..."></textarea>
+                
+                <label>Price (₹):</label>
+                <input type="number" placeholder="e.g., 2500" required>
+
+                <label>Demo Link:</label>
+                <input type="url" placeholder="https://demo.com" required>
+                
+                <button type="submit" class="btn-publish">Publish Website</button>
+            </form>
+        </div>
+
+        <div id="live-chat" class="card" style="padding: 0;">
+            <div class="chat-container">
+                <div class="chat-sidebar">
+                    <div class="chat-user">
+                        <span class="badge">New</span>
+                        <h4>Rahul Kumar</h4>
+                        <p>Order: Multi-vendor Store</p>
+                    </div>
+                    <div class="chat-user">
+                        <h4>Amit Singh</h4>
+                        <p>Order: Cyber Blog</p>
+                    </div>
+                </div>
+                <div class="chat-area">
+                    <div class="chat-box" id="adminChatBox">
+                        <div class="msg msg-client">Bhai, maine ₹5999 send kar diye hain. UTR: 123456789</div>
+                        <div class="msg msg-client">Mujhe code send kar do please.</div>
+                        <div class="msg msg-me">Payment received bhai! Ye lijiye aapki website ka ZIP file link: https://drive.google.com/...</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="adminInput" placeholder="Type a reply or paste code link...">
+                        <button class="btn-send" onclick="sendAdminMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Remove active class from all buttons and tabs
+            document.querySelectorAll('.card').forEach(card => card.classList.remove('active-card'));
+            
+            // Show the selected tab
+            document.getElementById(tabId).classList.add('active-card');
+        }
+
+        function sendAdminMessage() {
+            let input = document.getElementById('adminInput');
+            let text = input.value.trim();
+            if(text !== "") {
+                let chatBox = document.getElementById('adminChatBox');
+                chatBox.innerHTML += `<div class="msg msg-me">${text}</div>`;
+                input.value = "";
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
+
